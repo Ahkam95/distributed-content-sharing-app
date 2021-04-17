@@ -7,13 +7,11 @@ public class Client {
     public static final int NODE_REQUEST_TIMEOUT = 1000;
     public static final int NODE_SEARCH_TIMEOUT = 10000;
 
-    // varibales
-    public static String NODE_IP;
-    public static int NODE_PORT;
-
     public static void main(String[] args) {
         // extract information from cmd
-        extract(args);
+        Map<String, String> config = extract(args);
+        String NODE_IP = config.get("IP");
+        int NODE_PORT = Integer.parseInt(config.get("PORT"));
 
         MessageBroker messageBroker = null;
 
@@ -39,7 +37,7 @@ public class Client {
 
             switch (option) {
                 case "1":
-                    startNode(messageBroker, scanner);
+                    startNode(messageBroker, scanner, NODE_IP, NODE_PORT);
                     continue;
                 case "2":
                     terminate = true;
@@ -52,18 +50,18 @@ public class Client {
     }
 
     // extract inputs from commond line
-    // map to class variable NODE_IP and NODE_PORT 
+    // return a map which contains ip and port 
     // if the command line input is valid.
-    public static void extract(String[] args) {
-        // default ip and port 
-        String IP = "localhost";
-        String PORT = "55556";
-
+    public static Map<String,String> extract(String[] args) {
+        // default ip
+        String NODE_IP = "localhost";
+        String NODE_PORT = "55556";
+        System.out.println(args);
         for (String arg : args) {
             if (arg.toLowerCase().startsWith("--node=")) {
                 StringTokenizer stringTokenizer = new StringTokenizer(arg.substring(6), ":");
-                IP = stringTokenizer.nextToken();
-                PORT = stringTokenizer.nextToken();
+                NODE_IP = stringTokenizer.nextToken();
+                NODE_PORT = stringTokenizer.nextToken();
             } else if (arg.toLowerCase().equals("--info")) {
                 System.out.println("Usage: java Starter [--node=<ip>:<port>] [--info]");
                 System.out.println("Default node\t= localhost:55556");
@@ -74,11 +72,15 @@ public class Client {
             }
         }
 
-        NODE_IP = IP;
-        NODE_PORT = Integer.parseInt(PORT);
+        Map<String,String> map = new HashMap<String,String>();
+
+        map.put("IP", NODE_IP);  
+        map.put("PORT", NODE_PORT); 
+
+        return map;
     }
 
-    public static void startNode(MessageBroker messageBroker, Scanner scanner){
+    public static void startNode(MessageBroker messageBroker, Scanner scanner, String nodeIP, int nodePORT){
          // creating request string 
         String request = "START";
         request = String.format("%04d", request.length() + 5) + " " + request + "\n";
@@ -86,7 +88,7 @@ public class Client {
         
         try {
             // send request and recive respose from message broker
-            response = messageBroker.sendAndReceive(request, NODE_IP, NODE_PORT, NODE_REQUEST_TIMEOUT).trim();
+            response = messageBroker.sendAndReceive(request, nodeIP, nodePORT, NODE_REQUEST_TIMEOUT).trim();
         } catch (IOException e) {
             System.out.println("Error: Cannot start the node.");
         }
@@ -107,16 +109,16 @@ public class Client {
 
                 switch (option) {
                     case "1":
-                        searchFile(messageBroker, scanner);
+                        searchFile(messageBroker, scanner, nodeIP, nodePORT);
                         break;
                     case "2":
-                        printRoutingTable(messageBroker);
+                        printRoutingTable(messageBroker, nodeIP, nodePORT);
                         break;
                     case "3":
-                        printAvailableFiles(messageBroker);
+                        printAvailableFiles(messageBroker, nodeIP, nodePORT);
                         break;
                     case "4":
-                        startNode(messageBroker);
+                        stopNode(messageBroker, nodeIP, nodePORT);
                         terminate = true;
                         continue;
                     default:
@@ -132,19 +134,19 @@ public class Client {
         }  
     }
 
-    public static void searchFile(MessageBroker messageBroker, Scanner scanner){
+    public static void searchFile(MessageBroker messageBroker, Scanner scanner, String nodeIP, int nodePORT){
         // getting filename input
         System.out.print("Enter file name: ");
         String fileName = scanner.nextLine();
 
         // creating request string 
-        request = "SER " + NODE_IP + " " + NODE_PORT + " \"" + fileName + "\" 0";
+        request = "SER " + nodeIP + " " + nodePORT + " \"" + fileName + "\" 0";
         request = String.format("%04d", request.length() + 5) + " " + request + "\n";
         response = null;
 
         try {
             // send request and recive respose from message broker
-            response = messageBroker.sendAndReceive(request, NODE_IP, NODE_PORT, NODE_SEARCH_TIMEOUT).trim();
+            response = messageBroker.sendAndReceive(request, nodeIP, nodePORT, NODE_SEARCH_TIMEOUT).trim();
 
             StringTokenizer stringTokenizer = new StringTokenizer(response);
             String length = stringTokenizer.nextToken();
@@ -200,7 +202,7 @@ public class Client {
         }
     }
 
-    public static void printRoutingTable(MessageBroker messageBroker){
+    public static void printRoutingTable(MessageBroker messageBroker, String nodeIP, int nodePORT){
         // creating request string 
         request = "PRINT";
         request = String.format("%04d", request.length() + 5) + " " + request + "\n";
@@ -208,7 +210,7 @@ public class Client {
 
         try {
             // send request and recive respose from message broker
-            response = messageBroker.sendAndReceive(request, NODE_IP, NODE_PORT, NODE_REQUEST_TIMEOUT).trim();
+            response = messageBroker.sendAndReceive(request, nodeIP, nodePORT, NODE_REQUEST_TIMEOUT).trim();
         } catch (IOException e) {
             System.out.println("Error: Could not print the routing table.");
             return;
@@ -218,7 +220,7 @@ public class Client {
         return;
     }
 
-    public static void printAvailableFiles(MessageBroker messageBroker){
+    public static void printAvailableFiles(MessageBroker messageBroker, String nodeIP, int nodePORT){
         // creating request string 
         request = "PRINTF";
         request = String.format("%04d", request.length() + 5) + " " + request + "\n";
@@ -226,7 +228,7 @@ public class Client {
 
         try {
             // send request and recive respose from message broker
-            response = messageBroker.sendAndReceive(request, NODE_IP, NODE_PORT, Constants.NODE_REQUEST_TIMEOUT).trim();
+            response = messageBroker.sendAndReceive(request, nodeIP, nodePORT, NODE_REQUEST_TIMEOUT).trim();
         } catch (IOException e) {
             System.out.println("Error: Could not print available files.");
             return;
@@ -236,7 +238,7 @@ public class Client {
         return;
     }
 
-    public static void stopNode(MessageBroker messageBroker){
+    public static void stopNode(MessageBroker messageBroker, String nodeIP, int nodePORT){
         // creating request string
         request = "STOP";
         request = String.format("%04d", request.length() + 5) + " " + request + "\n";
@@ -244,7 +246,7 @@ public class Client {
 
         try {
             // send request and recive respose from message broker
-            response = messageBroker.sendAndReceive(request, NODE_IP, NODE_PORT, NODE_REQUEST_TIMEOUT).trim();
+            response = messageBroker.sendAndReceive(request, nodeIP, nodePORT, NODE_REQUEST_TIMEOUT).trim();
         } catch (IOException e) {
             System.out.println("Error: Unable to stop the server.");
         }
