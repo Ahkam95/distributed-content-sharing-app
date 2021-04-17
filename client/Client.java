@@ -188,18 +188,48 @@ public class Client {
                 return;
             } else {
                 System.out.println("\nFile not found for: '" + fileName + "':");
+                return;
             }
         } catch (IOException e) {
             System.out.println("Error: Cound not search.");
+            return;
         }
     }
 
-    public static void printRoutingTable(){
+    public static void printRoutingTable(MessageBroker messageBroker){
+        // creating request string 
+        request = "PRINT";
+        request = String.format("%04d", request.length() + 5) + " " + request + "\n";
+        response = null;
+
+        try {
+            // send request and recive respose from message broker
+            response = messageBroker.sendAndReceive(request, NODE_IP, NODE_PORT, NODE_REQUEST_TIMEOUT).trim();
+        } catch (IOException e) {
+            System.out.println("Error: Could not print the routing table.");
+            return;
+        }
         
+        System.out.println(response);
+        return;
     }
 
-    public static void printAvailableFiles(){
-        
+    public static void printAvailableFiles(MessageBroker messageBroker){
+        // creating request string 
+        request = "PRINTF";
+        request = String.format("%04d", request.length() + 5) + " " + request + "\n";
+        response = null;
+
+        try {
+            // send request and recive respose from message broker
+            response = messageBroker.sendAndReceive(request, NODE_IP, NODE_PORT, Constants.NODE_REQUEST_TIMEOUT).trim();
+        } catch (IOException e) {
+            System.out.println("Error: Could not print available files.");
+            return;
+        }
+
+        System.out.println(response);
+        return;
     }
 
 }
