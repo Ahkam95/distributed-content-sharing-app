@@ -95,7 +95,7 @@ public class Client {
             System.out.println("Node has started.");
 
             boolean terminate = false;
-            while (true) {
+            while (!terminate) {
                 System.out.println("\nSelect an option:");
                 System.out.println("1. Search a file");
                 System.out.println("2. Print routing table");
@@ -107,24 +107,28 @@ public class Client {
 
                 switch (option) {
                     case "1":
-                        
+                        searchFile(messageBroker, scanner);
                         break;
                     case "2":
-                        
+                        printRoutingTable(messageBroker);
                         break;
                     case "3":
-                        
+                        printAvailableFiles(messageBroker);
                         break;
                     case "4":
-                        
+                        startNode(messageBroker);
+                        terminate = true;
+                        continue;
                     default:
                         System.out.println("Invalid option number. Try again.\n");
                 }
             }
         } else if (response.equals("0017 STARTOK 9999")) {
-            System.out.println("Error: An error occurred while starting the node.");
+            System.out.println("Error: An error occurred.");
+            return;
         } else {
-            System.out.println("Error: An unknown error occurred while starting the node.");
+            System.out.println("Error: An unknown error occurred.");
+            return;
         }  
     }
 
@@ -230,6 +234,32 @@ public class Client {
 
         System.out.println(response);
         return;
+    }
+
+    public static void stopNode(MessageBroker messageBroker){
+        // creating request string
+        request = "STOP";
+        request = String.format("%04d", request.length() + 5) + " " + request + "\n";
+        response = null;
+
+        try {
+            // send request and recive respose from message broker
+            response = messageBroker.sendAndReceive(request, NODE_IP, NODE_PORT, NODE_REQUEST_TIMEOUT).trim();
+        } catch (IOException e) {
+            System.out.println("Error: Unable to stop the server.");
+        }
+
+        // stop according to response
+        if (response.equals("0013 STOPOK 0")) {
+            System.out.println("Node has stopped.");
+            return;
+        } else if (response.equals("0016 STOPOK 9999")) {
+            System.out.println("Error: An error occurred and node stopped.");
+            return;
+        } else {
+            System.out.println("Error: An unknown error occurred and node stopped.");
+            return;
+        }
     }
 
 }
