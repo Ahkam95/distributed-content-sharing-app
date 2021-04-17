@@ -154,7 +154,11 @@ public class Client {
             String ipAddress = stringTokenizer.nextToken();
             int port = Integer.parseInt(stringTokenizer.nextToken());
             int hops = Integer.parseInt(stringTokenizer.nextToken());
+
+            // create array for store matching file names
             ArrayList<String> fileNames = new ArrayList<>();
+
+            // searching file names
             for (int i = 0; i < fileCount; i++) {
                 String tempToken = stringTokenizer.nextToken();
                 if (tempToken.startsWith("\"")) {
@@ -169,27 +173,24 @@ public class Client {
                         fileNames.add(tempFileName);
                     }
                 } else {
-                    System.out.println("Error: Invalid search result.");
-                    break;
+                    System.out.println("Error: Wrong search result.");
+                    return;
                 }
             }
+
+            // if files availabele
+            // then fo this
             if (fileNames.size() > 0) {
                 System.out.println("\nAvailable files for the search term '" + fileName + "':");
                 for (int i = 0; i < fileNames.size(); i++) {
                     System.out.println((i + 1) + ". " + fileNames.get(i));
                 }
-                System.out.print("\nSelect a file to download: ");
-                int downloadOption = Integer.parseInt(scanner.nextLine());
-                request = "DOWNLOAD " + ipAddress + " " + port + " \"" + fileNames.get(downloadOption - 1) + "\"";
-                request = String.format("%04d", request.length() + 5) + " " + request + "\n";
-                response = messageBroker.sendAndReceive(request, NODE_IP, NODE_PORT, Constants.NODE_SEARCH_TIMEOUT).trim();
-                // todo: handle response here
-                System.out.println(response);
+                return;
             } else {
-                System.out.println("\nNo files available for the search term '" + fileName + "':");
+                System.out.println("\nFile not found for: '" + fileName + "':");
             }
         } catch (IOException e) {
-            System.out.println("Error: Unable to search.");
+            System.out.println("Error: Cound not search.");
         }
     }
 
