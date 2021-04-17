@@ -38,7 +38,7 @@ public class Client {
             switch (option) {
                 case "1":
                     startNode(messageBroker, scanner, NODE_IP, NODE_PORT);
-                    continue;
+                    break;
                 case "2":
                     terminate = true;
                     System.out.println("Exited from menu.");
@@ -140,9 +140,9 @@ public class Client {
         String fileName = scanner.nextLine();
 
         // creating request string 
-        request = "SER " + nodeIP + " " + nodePORT + " \"" + fileName + "\" 0";
+        String request = "SER " + nodeIP + " " + nodePORT + " \"" + fileName + "\" 0";
         request = String.format("%04d", request.length() + 5) + " " + request + "\n";
-        response = null;
+        String response = null;
 
         try {
             // send request and recive respose from message broker
@@ -204,9 +204,9 @@ public class Client {
 
     public static void printRoutingTable(MessageBroker messageBroker, String nodeIP, int nodePORT){
         // creating request string 
-        request = "PRINT";
+        String request = "PRINT";
         request = String.format("%04d", request.length() + 5) + " " + request + "\n";
-        response = null;
+        String response = null;
 
         try {
             // send request and recive respose from message broker
@@ -222,9 +222,9 @@ public class Client {
 
     public static void printAvailableFiles(MessageBroker messageBroker, String nodeIP, int nodePORT){
         // creating request string 
-        request = "PRINTF";
+        String request = "PRINTF";
         request = String.format("%04d", request.length() + 5) + " " + request + "\n";
-        response = null;
+        String response = null;
 
         try {
             // send request and recive respose from message broker
@@ -240,9 +240,9 @@ public class Client {
 
     public static void stopNode(MessageBroker messageBroker, String nodeIP, int nodePORT){
         // creating request string
-        request = "STOP";
+        String request = "STOP";
         request = String.format("%04d", request.length() + 5) + " " + request + "\n";
-        response = null;
+        String response = null;
 
         try {
             // send request and recive respose from message broker
