@@ -129,7 +129,68 @@ public class Client {
     }
 
     public static void searchFile(MessageBroker messageBroker, Scanner scanner){
+        // getting filename input
+        System.out.print("Enter file name: ");
+        String fileName = scanner.nextLine();
 
+        // creating request string 
+        request = "SER " + NODE_IP + " " + NODE_PORT + " \"" + fileName + "\" 0";
+        request = String.format("%04d", request.length() + 5) + " " + request + "\n";
+        response = null;
+
+        try {
+            // send request and recive respose from message broker
+            response = messageBroker.sendAndReceive(request, NODE_IP, NODE_PORT, NODE_SEARCH_TIMEOUT).trim();
+
+            StringTokenizer stringTokenizer = new StringTokenizer(response);
+            String length = stringTokenizer.nextToken();
+            String command = stringTokenizer.nextToken();
+            int fileCount = Integer.parseInt(stringTokenizer.nextToken());
+            if (fileCount == 9999 || fileCount == 9998) {
+                System.out.println("\nFiles not found for :'" + fileName + "'");
+                return;
+            }
+
+            String ipAddress = stringTokenizer.nextToken();
+            int port = Integer.parseInt(stringTokenizer.nextToken());
+            int hops = Integer.parseInt(stringTokenizer.nextToken());
+            ArrayList<String> fileNames = new ArrayList<>();
+            for (int i = 0; i < fileCount; i++) {
+                String tempToken = stringTokenizer.nextToken();
+                if (tempToken.startsWith("\"")) {
+                    if (tempToken.endsWith("\"")) {
+                        fileNames.add(tempToken.substring(1, tempToken.lastIndexOf("\"")));
+                    } else {
+                        String tempFileName = tempToken.substring(1);
+                        while (!(tempToken = stringTokenizer.nextToken()).endsWith("\"")) {
+                            tempFileName += " " + tempToken;
+                        }
+                        tempFileName += " " + tempToken.substring(0, tempToken.length() - 1);
+                        fileNames.add(tempFileName);
+                    }
+                } else {
+                    System.out.println("Error: Invalid search result.");
+                    break;
+                }
+            }
+            if (fileNames.size() > 0) {
+                System.out.println("\nAvailable files for the search term '" + fileName + "':");
+                for (int i = 0; i < fileNames.size(); i++) {
+                    System.out.println((i + 1) + ". " + fileNames.get(i));
+                }
+                System.out.print("\nSelect a file to download: ");
+                int downloadOption = Integer.parseInt(scanner.nextLine());
+                request = "DOWNLOAD " + ipAddress + " " + port + " \"" + fileNames.get(downloadOption - 1) + "\"";
+                request = String.format("%04d", request.length() + 5) + " " + request + "\n";
+                response = messageBroker.sendAndReceive(request, NODE_IP, NODE_PORT, Constants.NODE_SEARCH_TIMEOUT).trim();
+                // todo: handle response here
+                System.out.println(response);
+            } else {
+                System.out.println("\nNo files available for the search term '" + fileName + "':");
+            }
+        } catch (IOException e) {
+            System.out.println("Error: Unable to search.");
+        }
     }
 
     public static void printRoutingTable(){
