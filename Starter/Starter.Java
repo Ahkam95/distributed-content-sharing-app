@@ -13,7 +13,6 @@ public class Starter {
         String option, request, response;
 
         MessageBroker messageBroker = null;
-        Scanner scanner = new Scanner(System.in);
 
         try {
             messageBroker = new MessageBroker();
@@ -22,15 +21,40 @@ public class Starter {
             System.exit(0);
         }
 
-        System.out.println(messageBroker);
-        System.out.println(scanner);
+        // to read input from cli
+        Scanner scanner = new Scanner(System.in);
+
+        boolean terminate = false;
+        while (!terminate) {
+            System.out.println("\nChoose an option to continue:");
+            System.out.println("1. Start node");
+            System.out.println("2. Exit");
+            System.out.print("\nPlease enter the option number: ");
+
+            // reading input from cli
+            option = scanner.nextLine();
+
+            switch (option) {
+                case "1":
+                    pass;
+
+                case "2":
+                    terminate = true;
+
+                default:
+                    System.out.println("\nInvalid input. Try again.\n");
+            }
+        }
     }
 
+    // extract inputs from commond line
+    // return a map which contains ip and port 
+    // if the command line input is valid.
     public static Map<String,String> extract(String[] args) {
         // default ip
         String NODE_IP = "localhost";
         String NODE_PORT = "55556";
-        System.out.println(args);
+
         for (String arg : args) {
             if (arg.toLowerCase().startsWith("--node=")) {
                 StringTokenizer stringTokenizer = new StringTokenizer(arg.substring(6), ":");
