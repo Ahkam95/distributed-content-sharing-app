@@ -1,7 +1,7 @@
 package file_transfering;
 
 import file_template.FileTemplate;
-import QueryHandling.QueryHandler;
+import query_handling.QueryHandler;
 
 import java.util.*;
 import java.io.IOException;
