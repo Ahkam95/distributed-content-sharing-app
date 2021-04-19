@@ -1,3 +1,5 @@
+package client;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -29,12 +31,8 @@ public class MessageBroker {
     }
 
     public String sendAndReceive(String request, String ipAddress, int port, int timeout) throws IOException {
-        DatagramPacket requestDatagramPacket = new DatagramPacket(
-                request.getBytes(),
-                request.length(),
-                InetAddress.getByName(ipAddress),
-                port
-        );
+        DatagramPacket requestDatagramPacket = new DatagramPacket(request.getBytes(), request.length(),
+                InetAddress.getByName(ipAddress), port);
         datagramSocket.setSoTimeout(timeout);
         datagramSocket.send(requestDatagramPacket);
         byte[] buffer = new byte[65536];
