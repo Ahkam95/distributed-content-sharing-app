@@ -1,4 +1,4 @@
-package error_handling;
+package exception;
 
 public class DistributedProjException extends Exception {
     public DistributedProjException(String message) {

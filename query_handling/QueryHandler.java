@@ -182,7 +182,7 @@ public class QueryHandler implements Runnable {
                             System.out.println("Registration success. No nodes in the system yet.");
                             break;
                         case "9999":
-                            throw new CommandErrorException("Registration failed. Invalid command");
+                            throw new DistributedProjException("Registration failed. Invalid command");
                         case "9998":
                             throw new AlreadyRegisteredException("Already registered to you");
                         case "9997":
@@ -197,7 +197,7 @@ public class QueryHandler implements Runnable {
                             }
                             System.out.println("Registered successfully.");
                         }
-                    } catch (CommandErrorException | AlreadyRegisteredException | AlreadyAssignedException
+                    } catch (DistributedProjException | AlreadyRegisteredException | AlreadyAssignedException
                             | ServerFullException e) {
                         System.out.println(e.getMessage());
                         response.append("9999");
@@ -251,9 +251,9 @@ public class QueryHandler implements Runnable {
                             System.out.println("Unregistered successfully.");
                             break;
                         case "9999":
-                            throw new CommandErrorException("Unable to unregister.");
+                            throw new DistributedProjException("Unable to unregister.");
                         }
-                    } catch (CommandErrorException e) {
+                    } catch (DistributedProjException e) {
                         System.out.println(e.getMessage());
                         if (!response.toString().contains("9999")) {
                             response.append("9999");
