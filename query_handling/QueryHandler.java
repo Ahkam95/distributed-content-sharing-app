@@ -55,6 +55,7 @@ public class QueryHandler implements Runnable {
                 String request = new String(incomingDatagramPacket.getData(), 0, incomingDatagramPacket.getLength());
                 System.out.println(incomingDatagramPacket.getAddress() + ":" + incomingDatagramPacket.getPort() + " - "
                         + request.replace("\n", ""));
+
                 StringTokenizer stringTokenizer = new StringTokenizer(request.trim(), " ");
                 String length = stringTokenizer.nextToken();
                 String command = stringTokenizer.nextToken();
