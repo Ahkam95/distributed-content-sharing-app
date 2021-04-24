@@ -24,14 +24,15 @@ public class DistributedNode {
                 SERVER_IP = stringTokenizer.nextToken();
                 SERVER_PORT = Integer.parseInt(stringTokenizer.nextToken());
             } else if (arg.toLowerCase().equals("-help")) {
-                System.out.println("Usage: java node [-port=<port>] [-server=<ip>:<port>] [-help]\n");
+                System.out.println(
+                        "Usage: java file_sharing.DistributedNode [-port=<port>] [-server=<ip>:<port>] [-help]\n");
                 System.out.println("Default port\t= 55556\nDefault server\t= localhost:55555");
             } else {
                 System.out.println("Error: Invalid arguments.\nUse 'java node -help' command for help.");
                 System.exit(0);
             }
         }
-
+        System.out.println("Test Query handler");
         QueryHandler queryHandler = new QueryHandler(nodes, files, MY_IP, MY_PORT, MY_USERNAME, SERVER_IP, SERVER_PORT);
         Thread thread1 = new Thread(queryHandler);
         thread1.start();

@@ -26,7 +26,6 @@ public class FtpServer implements Runnable {
             try {
                 clk_sckt = srvr_sckt.accept();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             Thread thread = new Thread(new TransferData(clk_sckt, name));
